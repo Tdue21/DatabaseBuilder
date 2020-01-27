@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DatabaseBuilder
@@ -19,48 +17,6 @@ namespace DatabaseBuilder
         public int Seed { get; set; }
         public int Increment { get; set; }
         public bool PrimaryKey { get; set; }
-
-        public virtual string ToScript()
-        {
-            return new StringBuilder().Append(ColumnName)
-                                      .Append(" ")
-                                      .Append(GetColumnType())
-                                      .Append(Identity ? $" IDENTITY({Seed}, {Increment})" : "")
-                                      .Append(Nullable ? " NULL" : " NOT NULL")
-                                      .Append(!string.IsNullOrWhiteSpace(DefaultValue) && !Identity ? $" CONSTRAINT df_{TableName}_{ColumnName} DEFAULT {DefaultValue}" : "")
-                                      .ToString();
-        }
-
-        protected string GetColumnType()
-        {
-            string GetPrecision() => $"({Length},{Precision})";
-
-            var typeName = ColumnType.FullName?.ToLowerInvariant();
-
-            switch (typeName)
-            {
-                case "system.boolean": return "bit";
-
-                case "system.byte": return "tinyint";
-                case "system.int16": return "smallint";
-                case "system.int32": return "int";
-                case "system.int64": return "bigint";
-
-                case "system.char": return "nchar(1)";
-                case "system.char[]":
-                case "system.string": return $"nvarchar({(Length > 0 ? Length.ToString() : "max")})";
-
-                case "system.datetime": return "datetime";
-
-                case "system.single": return "real" + GetPrecision();
-                case "system.double": return "float" + GetPrecision();
-                case "system.decimal": return "numeric" + GetPrecision();
-
-                case "system.guid": return "uniqueidentifier";
-
-                default: throw new NotSupportedException($"The type '{ColumnType.FullName}' is not supported for column '{ColumnName}'.");
-            }
-        }
     }
 
     public static class ColumnDefinitionExtensions
@@ -102,6 +58,49 @@ namespace DatabaseBuilder
             definition.Length = length;
             definition.Precision = precision;
             return definition;
+        }
+    
+
+        public static string ToScript(this ColumnDefinition column)
+        {
+            return new StringBuilder().Append(column.ColumnName)
+                                      .Append(" ")
+                                      .Append(GetColumnType(column))
+                                      .Append(column.Identity ? $" IDENTITY({column.Seed}, {column.Increment})" : "")
+                                      .Append(column.Nullable ? " NULL" : " NOT NULL")
+                                      .Append(!string.IsNullOrWhiteSpace(column.DefaultValue) && !column.Identity ? $" CONSTRAINT df_{column.TableName}_{column.ColumnName} DEFAULT {column.DefaultValue}" : "")
+                                      .ToString();
+        }
+
+        private static string GetColumnType(ColumnDefinition column)
+        {
+            string GetPrecision() => $"({column.Length},{column.Precision})";
+
+            var typeName = column.ColumnType.FullName?.ToLowerInvariant();
+
+            switch (typeName)
+            {
+                case "system.boolean": return "bit";
+
+                case "system.byte": return "tinyint";
+                case "system.int16": return "smallint";
+                case "system.int32": return "int";
+                case "system.int64": return "bigint";
+
+                case "system.char": return "nchar(1)";
+                case "system.char[]":
+                case "system.string": return $"nvarchar({(column.Length > 0 ? column.Length.ToString() : "max")})";
+
+                case "system.datetime": return "datetime";
+
+                case "system.single": return "real" + GetPrecision();
+                case "system.double": return "float" + GetPrecision();
+                case "system.decimal": return "numeric" + GetPrecision();
+
+                case "system.guid": return "uniqueidentifier";
+
+                default: throw new NotSupportedException($"The type '{column.ColumnType.FullName}' is not supported for column '{column.ColumnName}'.");
+            }
         }
     }
 }
