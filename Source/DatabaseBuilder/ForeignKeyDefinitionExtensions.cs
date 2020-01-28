@@ -20,22 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using DatabaseBuilder.Attributes;
 
 namespace DatabaseBuilder
 {
-    public class ForeignKeyDefinition
+    public static class ForeignKeyDefinitionExtensions
     {
-        public string[] FieldNames { get; set; }
+        public static string ToScript(this ForeignKeyDefinition definition, string constraint)
+        {
+            string GetAction(Actions onUpdate)
+            {
+                switch (onUpdate)
+                {
+                    case Actions.Cascade:    return "CASCADE";
+                    case Actions.SetNull:    return "SET NULL";
+                    case Actions.SetDefault: return "SET DEFAULT";
+                    case Actions.NoAction:   return "NO ACTION";
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(onUpdate), onUpdate, null);
+                }
+            }
 
-        public string Schema { get; set; }
-
-        public string Table { get; set; }
-
-        public string[] ReferenceFields { get; set; }
-
-        public Actions OnUpdate { get; set; }
-
-        public Actions OnDelete { get; set; }
+            return $"CONSTRAINT fk_{constraint}_{string.Join("_", definition.FieldNames)} " +
+                   $"FOREIGN KEY ([{string.Join("],[", definition.FieldNames)}]) " +
+                   $"REFERENCES [{definition.Schema}].[{definition.Table}] ([{string.Join("],[", definition.ReferenceFields)}]) " +
+                   $"ON UPDATE {GetAction(definition.OnUpdate)} ON DELETE {GetAction(definition.OnDelete)}";
+        }
     }
 }

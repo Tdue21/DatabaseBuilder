@@ -54,6 +54,7 @@
     <Compile Include="DatabaseBuilder.cs" />
     <Compile Include="DatabaseSettings.cs" />
     <Compile Include="ForeignKeyDefinition.cs" />
+    <Compile Include="ForeignKeyDefinitionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TableDefinition.cs" />
     <Compile Include="TableDefinitionExtensions.cs" />

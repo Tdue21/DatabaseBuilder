@@ -1,6 +1,6 @@
 ﻿// MIT License
 // 
-// Copyright (c)  Thomas Due
+// Copyright (c) 2020 Thomas Due
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,8 @@ namespace DatabaseBuilder.Attributes
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class TableDefinitionAttribute : Attribute
     {
-        [DefaultValue("dbo")]
-        public string Schema { get; set; }
+        [DefaultValue("dbo")] public string Schema { get; set; }
 
-        [DefaultValue(null)]
-        public string Name { get; set; }
+        [DefaultValue(null)] public string Name { get; set; }
     }
 }

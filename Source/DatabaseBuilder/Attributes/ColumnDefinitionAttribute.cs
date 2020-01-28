@@ -1,6 +1,6 @@
 ﻿// MIT License
 // 
-// Copyright (c)  Thomas Due
+// Copyright (c) 2020 Thomas Due
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,15 @@
 
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DatabaseBuilder.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class ColumnDefinitionAttribute : Attribute
     {
+        public ColumnDefinitionAttribute([CallerLineNumber] int order = 0) => Order = order;
+
         public string Name { get; set; }
 
         public int Length { get; set; }
@@ -36,27 +39,22 @@ namespace DatabaseBuilder.Attributes
 
         public int Scale { get; set; }
 
-        [DefaultValue(false)]
-        public bool PrimaryKey { get; set; }
+        [DefaultValue(false)] public bool PrimaryKey { get; set; }
 
-        [DefaultValue(false)]
-        public bool Identity { get; set; }
+        [DefaultValue(false)] public bool Identity { get; set; }
 
-        [DefaultValue(1)]
-        public int Seed { get; set; }
+        [DefaultValue(1)] public int Seed { get; set; }
 
-        [DefaultValue(1)]
-        public int Increment { get; set; }
+        [DefaultValue(1)] public int Increment { get; set; }
 
-        [DefaultValue(true)]
-        public bool Nullable { get; set; }
+        [DefaultValue(true)] public bool Nullable { get; set; }
 
-        [DefaultValue(1)]
-        public int Version { get; set; }
+        [DefaultValue(1)] public int Version { get; set; }
 
-        [DefaultValue(false)]
-        public bool IsUnique { get; set; }
+        [DefaultValue(false)] public bool IsUnique { get; set; }
 
         public string DefaultValue { get; set; }
+
+        public int Order { get; set; }
     }
 }

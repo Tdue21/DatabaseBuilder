@@ -37,7 +37,7 @@ namespace TestApp.Definitions
         public bool Active { get; set; }
 
         [ColumnDefinition]
-        [ForeignKeyDefinition(Table = "Article", Field = "Id", OnUpdate = Actions.Cascade, OnDelete = Actions.Cascade )]
+        [ForeignKeyDefinition(Table = "Article", Field = "Id", OnUpdate = Actions.Cascade, OnDelete = Actions.Cascade)]
         public int ArticleId { get; set; }
     }
 }

@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security;
 using System.Text;
 using DatabaseBuilder.Attributes;
@@ -94,57 +95,74 @@ namespace DatabaseBuilder
 
         public DatabaseBuilder CreateTable<T>() where T : new()
         {
-            var tableDef = typeof(T).GetCustomAttributes(typeof(TableDefinitionAttribute), false).Cast<TableDefinitionAttribute>().FirstOrDefault();
+            var tableDef = typeof(T).GetCustomAttribute<TableDefinitionAttribute>();
             if (tableDef != null)
             {
                 var schemaDef = tableDef.GetType().GetProperty("Schema");
                 if (schemaDef != null && tableDef.Schema == null)
                 {
-                    var schemaDefVal = schemaDef.GetCustomAttributes(typeof(DefaultValueAttribute), false).Cast<DefaultValueAttribute>().FirstOrDefault();
+                    var schemaDefVal = schemaDef.GetCustomAttribute<DefaultValueAttribute>();
                     if (schemaDefVal != null)
                     {
                         tableDef.Schema = schemaDefVal.Value.ToString();
                     }
                 }
 
-                var table = new TableDefinition(tableDef.Schema ?? "XX", tableDef.Name ?? typeof(T).Name);
-                var fields = typeof(T).GetProperties();
+                var table   = new TableDefinition(tableDef.Schema ?? "XX", tableDef.Name ?? typeof(T).Name);
+                var fields  = typeof(T).GetProperties();
+                var columns = new List<ColumnDefinition>();
                 foreach (var field in fields)
                 {
-                    var fieldDef = field.GetCustomAttributes(typeof(ColumnDefinitionAttribute), true).Cast<ColumnDefinitionAttribute>().FirstOrDefault();
+                    var fieldDef = field.GetCustomAttribute<ColumnDefinitionAttribute>();
                     if (fieldDef != null)
                     {
-                        table.Columns.Add(new ColumnDefinition
-                                          {
-                                              ColumnName = fieldDef.Name ?? field.Name,
-                                              ColumnType = field.PropertyType,
-                                              DefaultValue = fieldDef.DefaultValue,
-                                              Length = fieldDef.Length,
-                                              Precision = fieldDef.Precision,
-                                              Scale = fieldDef.Scale,
-                                              Identity = fieldDef.Identity,
-                                              Seed = fieldDef.Seed,
-                                              Increment = fieldDef.Increment,
-                                              Nullable = fieldDef.Nullable,
-                                              PrimaryKey = fieldDef.PrimaryKey,
-                                              TableName = $"{table.Schema}_{table.Name}",
-                                              Unique = fieldDef.IsUnique
-                                          });
+                        columns.Add(new ColumnDefinition
+                                    {
+                                        ColumnName   = fieldDef.Name ?? field.Name,
+                                        ColumnType   = field.PropertyType,
+                                        DefaultValue = fieldDef.DefaultValue,
+                                        Length       = fieldDef.Length,
+                                        Precision    = fieldDef.Precision,
+                                        Scale        = fieldDef.Scale,
+                                        Identity     = fieldDef.Identity,
+                                        Seed         = fieldDef.Seed,
+                                        Increment    = fieldDef.Increment,
+                                        Nullable     = fieldDef.Nullable,
+                                        PrimaryKey   = fieldDef.PrimaryKey,
+                                        TableName    = $"{table.Schema}_{table.Name}",
+                                        Unique       = fieldDef.IsUnique,
+                                        Order        = fieldDef.Order
+                                    });
                     }
 
-                    var foreignDefs = field.GetCustomAttributes(typeof(ForeignKeyDefinitionAttribute), true).Cast<ForeignKeyDefinitionAttribute>().FirstOrDefault();
+                    table.Columns.Clear();
+                    table.Columns.AddRange(columns.OrderBy(i => i.Order));
+
+
+                    var foreignDefs = field.GetCustomAttribute<ForeignKeyDefinitionAttribute>();
                     if (foreignDefs != null)
                     {
+                        schemaDef = foreignDefs.GetType().GetProperty("Schema");
+                        if (schemaDef != null && foreignDefs.Schema == null)
+                        {
+                            var defVal = schemaDef.GetCustomAttribute<DefaultValueAttribute>();
+                            if (defVal != null)
+                            {
+                                foreignDefs.Schema = defVal.Value.ToString();
+                            }
+                        }
                         table.ForeignKeys.Add(new ForeignKeyDefinition
                                               {
-                                                  FieldNames = new [] { field.Name},
-                                                  Table = foreignDefs.Table,
-                                                  ReferenceFields = new []{ foreignDefs.Field},
-                                                  OnUpdate = foreignDefs.OnUpdate,
-                                                  OnDelete = foreignDefs.OnDelete
+                                                  FieldNames      = new[] {field.Name},
+                                                  Schema          = foreignDefs.Schema,
+                                                  Table           = foreignDefs.Table,
+                                                  ReferenceFields = new[] {foreignDefs.Field},
+                                                  OnUpdate        = foreignDefs.OnUpdate,
+                                                  OnDelete        = foreignDefs.OnDelete
                                               });
                     }
                 }
+
                 _tables.Add(table);
             }
 

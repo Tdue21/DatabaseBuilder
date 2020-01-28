@@ -27,16 +27,16 @@ namespace TestApp.Definitions
     [TableDefinition]
     public class Article : CommonTableTraits
     {
-        [ColumnDefinition(Name = "Item", Length = 20, Nullable = false, IsUnique = true)]
+        [ColumnDefinition(Name = "Item", Length = 20, Nullable = false, IsUnique = true, Order = 10)]
         public string Code { get; set; }
 
-        [ColumnDefinition(Length = 80)]
+        [ColumnDefinition(Length = 80, Order = 11)]
         public string Name { get; set; }
 
-        [ColumnDefinition(DefaultValue = "1")]
+        [ColumnDefinition(DefaultValue = "1", Order = 12)]
         public bool Active { get; set; }
 
-        [ColumnDefinition(Precision = 18, Scale = 4)]
+        [ColumnDefinition(Precision = 18, Scale = 4, Order = 100)]
         public decimal UnitPrice { get; set; }
     }
 }

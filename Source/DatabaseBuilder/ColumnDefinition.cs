@@ -38,6 +38,7 @@ namespace DatabaseBuilder
         public int    Seed         { get; set; }
         public int    Increment    { get; set; }
         public bool   PrimaryKey   { get; set; }
-        public int Scale { get; set; }
+        public int    Scale        { get; set; }
+        public int    Order        { get; set; }
     }
 }

@@ -32,9 +32,9 @@ namespace DatabaseBuilder
 
         public TableDefinition(string schema, string name)
         {
-            Schema = schema;
-            Name = name;
-            Columns = new List<ColumnDefinition>();
+            Schema      = schema;
+            Name        = name;
+            Columns     = new List<ColumnDefinition>();
             ForeignKeys = new List<ForeignKeyDefinition>();
         }
 

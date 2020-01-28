@@ -49,9 +49,9 @@ namespace DatabaseBuilder
             var script = new StringBuilder()
                          .AppendLine($"CREATE TABLE [{table.Schema}].[{table.Name}]")
                          .AppendLine("(")
-                         .AppendLine(table.Columns.Aggregate(string.Empty, (c, n) => $"{c}{n.ToScript()},{Environment.NewLine}"))
-                         .AppendLine($"CONSTRAINT pk_{table.Schema}_{table.Name} PRIMARY KEY ([{string.Join("],[", primaryKey)}]),")
-                         .AppendLine(table.ForeignKeys.Aggregate(string.Empty, (c,n) => $"{c}{n.ToScript($"{table.Schema}_{table.Name}")},{Environment.NewLine}"));
+                         .AppendLine(table.Columns.Aggregate(string.Empty, (c, n) => $"{c}\t{n.ToScript()},{Environment.NewLine}"))
+                         .AppendLine($"\tCONSTRAINT pk_{table.Schema}_{table.Name} PRIMARY KEY ([{string.Join("],[", primaryKey)}]),")
+                         .AppendLine(table.ForeignKeys.Aggregate(string.Empty, (c, n) => $"{c}\t{n.ToScript($"{table.Schema}_{table.Name}")},{Environment.NewLine}"));
 
             var tableScript = script.ToString().Trim();
             if (tableScript.EndsWith(","))
@@ -61,7 +61,8 @@ namespace DatabaseBuilder
 
             script.AppendLine()
                   .AppendLine(");")
-                  .AppendLine("GO");
+                  .AppendLine("GO")
+                  .AppendLine();
 
             return script.ToString();
         }

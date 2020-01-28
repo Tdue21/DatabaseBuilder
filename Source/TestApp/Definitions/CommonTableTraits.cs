@@ -27,14 +27,13 @@ namespace TestApp.Definitions
 {
     public abstract class CommonTableTraits
     {
-        [ColumnDefinition(Name = "Id", PrimaryKey = true, Identity = true, Seed = 1, Increment = 1, Version = 1)]
+        [ColumnDefinition(Name = "Id", PrimaryKey = true, Identity = true, Seed = 1, Increment = 1, Version = 1, Order = 1)]
         public int Id { get; set; }
 
-        [ColumnDefinition(Nullable = false, DefaultValue = "getdate()")]
+        [ColumnDefinition(Nullable = false, DefaultValue = "getdate()", Order = 50)]
         public DateTime Created { get; set; }
 
-        [ColumnDefinition(Nullable = false, DefaultValue = "getdate()")]
+        [ColumnDefinition(Nullable = false, DefaultValue = "getdate()", Order = 51)]
         public DateTime Updated { get; set; }
-
     }
 }
