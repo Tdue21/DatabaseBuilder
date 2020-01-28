@@ -1,6 +1,6 @@
 ﻿// MIT License
 // 
-// Copyright (c) 2020 Thomas Due
+// Copyright (c)  Thomas Due
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DatabaseBuilder
+using System;
+using System.ComponentModel;
+
+namespace DatabaseBuilder.Attributes
 {
-    public class DatabaseSettings
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class ColumnDefinitionAttribute : Attribute
     {
-        public string Collation              { get; set; }
-        public bool   AllowSnapshotIsolation { get; set; }
-        public bool   ReadCommittedSnapshot  { get; set; }
-        public int    Compatibilitylevel     { get; set; }
-    }
+        public string Name { get; set; }
 
+        public int Length { get; set; }
 
-    public static class DatabaseSettingsExtensions
-    {
-        public static DatabaseSettings SetCompatibilityLevel(this DatabaseSettings settings, int compatibilityLevel)
-        {
-            settings.Compatibilitylevel = compatibilityLevel;
-            return settings;
-        }
+        public int Precision { get; set; }
 
-        public static DatabaseSettings SetCollation(this DatabaseSettings settings, string collation)
-        {
-            settings.Collation = collation;
-            return settings;
-        }
+        public int Scale { get; set; }
 
-        public static DatabaseSettings SetAllowSnapshotIsolation(this DatabaseSettings settings, bool allowSnapshotIsolation)
-        {
-            settings.AllowSnapshotIsolation = allowSnapshotIsolation;
-            return settings;
-        }
+        [DefaultValue(false)]
+        public bool PrimaryKey { get; set; }
+
+        [DefaultValue(false)]
+        public bool Identity { get; set; }
+
+        [DefaultValue(1)]
+        public int Seed { get; set; }
+
+        [DefaultValue(1)]
+        public int Increment { get; set; }
+
+        [DefaultValue(true)]
+        public bool Nullable { get; set; }
+
+        [DefaultValue(1)]
+        public int Version { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsUnique { get; set; }
+
+        public string DefaultValue { get; set; }
     }
 }

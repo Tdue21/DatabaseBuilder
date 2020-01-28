@@ -20,35 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DatabaseBuilder
+using DatabaseBuilder.Attributes;
+
+namespace TestApp.Definitions
 {
-    public class DatabaseSettings
+    [TableDefinition(Schema = "dbo", Name = "ApplicationVersion")]
+    public class ApplicationVersion : CommonTableTraits
     {
-        public string Collation              { get; set; }
-        public bool   AllowSnapshotIsolation { get; set; }
-        public bool   ReadCommittedSnapshot  { get; set; }
-        public int    Compatibilitylevel     { get; set; }
-    }
+        [ColumnDefinition(Name = "Item", Length = 20, Nullable = false, IsUnique = true)]
+        public string Item { get; set; }
 
+        [ColumnDefinition(Length = 80)]
+        public string Description { get; set; }
 
-    public static class DatabaseSettingsExtensions
-    {
-        public static DatabaseSettings SetCompatibilityLevel(this DatabaseSettings settings, int compatibilityLevel)
-        {
-            settings.Compatibilitylevel = compatibilityLevel;
-            return settings;
-        }
-
-        public static DatabaseSettings SetCollation(this DatabaseSettings settings, string collation)
-        {
-            settings.Collation = collation;
-            return settings;
-        }
-
-        public static DatabaseSettings SetAllowSnapshotIsolation(this DatabaseSettings settings, bool allowSnapshotIsolation)
-        {
-            settings.AllowSnapshotIsolation = allowSnapshotIsolation;
-            return settings;
-        }
+        [ColumnDefinition]
+        public int Version { get; set; }
     }
 }
